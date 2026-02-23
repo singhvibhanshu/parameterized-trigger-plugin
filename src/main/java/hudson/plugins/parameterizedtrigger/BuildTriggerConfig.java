@@ -679,19 +679,6 @@ public class BuildTriggerConfig implements Describable<BuildTriggerConfig> {
         }
     }
 
-    /**
-     * A backport of {@link Items#computeRelativeNamesAfterRenaming(String, String, String, ItemGroup)} in Jenkins 1.530.
-     *
-     * computeRelativeNamesAfterRenaming contains a bug in Jenkins < 1.530.
-     * Replace this to {@link Items#computeRelativeNamesAfterRenaming(String, String, String, ItemGroup)}
-     * when updated the target version to >= 1.530.
-     *
-     * @param oldFullName
-     * @param newFullName
-     * @param relativeNames
-     * @param context
-     * @return
-     */
     public boolean onJobRenamed(ItemGroup context, String oldName, String newName) {
         String newProjects = hudson.model.Items.computeRelativeNamesAfterRenaming(oldName, newName, projects, context);
         boolean changed = !projects.equals(newProjects);
