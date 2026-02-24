@@ -40,16 +40,16 @@ public class Plugin extends hudson.Plugin {
             String fullNewName = full + newName;
             for (Project<?, ?> p : Jenkins.get().getAllItems(Project.class)) {
                 boolean changed = false;
+
                 // iterate over post build triggers
-                BuildTrigger bt = p.getPublishersList().get(BuildTrigger.class);
-                if (bt != null) {
+                for (BuildTrigger bt : p.getPublishersList().getAll(BuildTrigger.class)) {
                     for (BuildTriggerConfig c : bt.getConfigs()) {
                         changed |= c.onJobRenamed(p.getParent(), fullOldName, fullNewName);
                     }
                 }
+
                 // iterate over build step triggers
-                TriggerBuilder tb = p.getBuildersList().get(TriggerBuilder.class);
-                if (tb != null) {
+                for (TriggerBuilder tb : p.getBuildersList().getAll(TriggerBuilder.class)) {
                     for (BuildTriggerConfig co : tb.getConfigs()) {
                         changed |= co.onJobRenamed(p.getParent(), fullOldName, fullNewName);
                     }
@@ -81,9 +81,9 @@ public class Plugin extends hudson.Plugin {
             for (Project<?, ?> p : Jenkins.get().getAllItems(Project.class)) {
                 String oldName = item.getFullName();
                 boolean changed = false;
+
                 // iterate over post build triggers
-                BuildTrigger bt = p.getPublishersList().get(BuildTrigger.class);
-                if (bt != null) {
+                for (BuildTrigger bt : p.getPublishersList().getAll(BuildTrigger.class)) {
                     for (ListIterator<BuildTriggerConfig> btc = bt.getConfigs().listIterator(); btc.hasNext(); ) {
                         BuildTriggerConfig c = btc.next();
                         if (c.onDeleted(p.getParent(), oldName)) {
@@ -94,9 +94,9 @@ public class Plugin extends hudson.Plugin {
                         }
                     }
                 }
+
                 // iterate over build step triggers
-                TriggerBuilder tb = p.getBuildersList().get(TriggerBuilder.class);
-                if (tb != null) {
+                for (TriggerBuilder tb : p.getBuildersList().getAll(TriggerBuilder.class)) {
                     for (ListIterator<BlockableBuildTriggerConfig> bbtc =
                                     tb.getConfigs().listIterator();
                             bbtc.hasNext(); ) {
@@ -118,11 +118,15 @@ public class Plugin extends hudson.Plugin {
                 // if something changed, save the project
                 if (changed) {
                     try {
-                        if (bt != null && bt.getConfigs().isEmpty()) {
-                            p.getPublishersList().remove(bt);
+                        for (BuildTrigger bt : p.getPublishersList().getAll(BuildTrigger.class)) {
+                            if (bt.getConfigs().isEmpty()) {
+                                p.getPublishersList().remove(bt);
+                            }
                         }
-                        if (tb != null && tb.getConfigs().isEmpty()) {
-                            p.getBuildersList().remove(tb);
+                        for (TriggerBuilder tb : p.getBuildersList().getAll(TriggerBuilder.class)) {
+                            if (tb.getConfigs().isEmpty()) {
+                                p.getBuildersList().remove(tb);
+                            }
                         }
                         p.save();
                     } catch (IOException e) {
