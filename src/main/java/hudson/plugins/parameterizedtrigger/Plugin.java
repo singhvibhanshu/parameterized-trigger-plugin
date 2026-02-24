@@ -40,14 +40,12 @@ public class Plugin extends hudson.Plugin {
             String fullNewName = full + newName;
             for (Project<?, ?> p : Jenkins.get().getAllItems(Project.class)) {
                 boolean changed = false;
-
                 // iterate over post build triggers
                 for (BuildTrigger bt : p.getPublishersList().getAll(BuildTrigger.class)) {
                     for (BuildTriggerConfig c : bt.getConfigs()) {
                         changed |= c.onJobRenamed(p.getParent(), fullOldName, fullNewName);
                     }
                 }
-
                 // iterate over build step triggers
                 for (TriggerBuilder tb : p.getBuildersList().getAll(TriggerBuilder.class)) {
                     for (BuildTriggerConfig co : tb.getConfigs()) {
@@ -81,7 +79,6 @@ public class Plugin extends hudson.Plugin {
             for (Project<?, ?> p : Jenkins.get().getAllItems(Project.class)) {
                 String oldName = item.getFullName();
                 boolean changed = false;
-
                 // iterate over post build triggers
                 for (BuildTrigger bt : p.getPublishersList().getAll(BuildTrigger.class)) {
                     for (ListIterator<BuildTriggerConfig> btc = bt.getConfigs().listIterator(); btc.hasNext(); ) {
@@ -94,7 +91,6 @@ public class Plugin extends hudson.Plugin {
                         }
                     }
                 }
-
                 // iterate over build step triggers
                 for (TriggerBuilder tb : p.getBuildersList().getAll(TriggerBuilder.class)) {
                     for (ListIterator<BlockableBuildTriggerConfig> bbtc =
